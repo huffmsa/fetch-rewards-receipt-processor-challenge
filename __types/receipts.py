@@ -1,14 +1,15 @@
-from pydantic import BaseModel
+from pydantic import BaseModel, StringConstraints
+from typing import Annotated
 
 
 class ReceiptItem(BaseModel):
-    shortDescription: str
-    price: str
+    shortDescription: Annotated[str, StringConstraints(min_length=1)]
+    price: Annotated[str, StringConstraints(pattern=r'\d+.\d\d')]
 
 
 class ReceiptsPayload(BaseModel):
     retailer: str
-    purchaseDate: str
-    purchaseTime: str
+    purchaseDate: Annotated[str, StringConstraints(pattern=r'\d\d\d\d-\d\d-\d\d')]
+    purchaseTime: Annotated[str, StringConstraints(pattern=r'\d\d:\d\d')]
     items: list[ReceiptItem]
     total: str

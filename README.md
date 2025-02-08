@@ -1,7 +1,14 @@
 # Fetch Rewards Receipt Processor Challenge
-A solution for the Fetch Rewards backend test. The solution includes 2 implementations, Dockerfile.basic directly meets the requirements of the test with endpoints for POSTing JSON receipts and retreiving points by receipt ID. Dockerfile.donut adds a transformer model which processes receipt images.
+A solution for the Fetch Rewards backend test. Dockerized and exposed on port 8000.
+
+## Build
+
+```bash
+docker build -f Dockerfile . -t sam-huffman-receipt-processor:1
+```
 
 ## Run
 
 ```bash
-docker build
+docker run -it -p 8000:8000 sam-huffman-receipt-processor:1
+```
