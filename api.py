@@ -1,20 +1,15 @@
-import os
 from datetime import datetime
 import string
 import json
 import re
 import math
-import io
-from typing import Annotated
 from hashlib import md5
 from uuid import uuid4
-from PIL import Image
-from fastapi import FastAPI, File, UploadFile
+from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
 from __types.receipts import ReceiptsPayload, ReceiptItem
 from __types.db import DBObject, DB
-from donut import process_image
 
 api = FastAPI()
 
@@ -29,7 +24,7 @@ api.add_middleware(
 
 db = DB()
 
-alpha_num_re = re.compile(f'[^{string.ascii_letters+string.digits}]') # regex for removing non-alphanumeric characters
+alpha_num_re = re.compile(f'[^{string.ascii_letters+string.digits}]')  # regex for removing non-alphanumeric characters
 
 
 def calculate_datetime_points(timestamp: str) -> int:
