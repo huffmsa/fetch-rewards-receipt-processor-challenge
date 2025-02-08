@@ -1,0 +1,14 @@
+**/*.pyc
+# Byte-compiled / optimized / DLL files
+__pycache__/
+*.py[cod]
+.idea
+.env
+/*.ipynb
+.ipynb_checkpoints
+setup.cfg
+data/
+**/__pycache__
+src/images/*
+node_modules/
+.python-version
