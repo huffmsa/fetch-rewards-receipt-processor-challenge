@@ -31,10 +31,12 @@ def calculate_datetime_points(timestamp: str) -> int:
     dt_points = 0
 
     receipt_timestamp = datetime.strptime(timestamp, '%Y-%m-%d %H:%M')
+    # Give points for odd days
     if receipt_timestamp.day % 2 != 0:
         dt_points += 6
 
     if receipt_timestamp.hour >= 14 and receipt_timestamp.hour < 16:
+        # Assuming that 14:00 is excluded because the instruction say after 2pm
         if receipt_timestamp.minute > 0:
             dt_points += 10
     return dt_points
@@ -51,15 +53,15 @@ def calculate_item_points(items: list[ReceiptItem]) -> int:
     return item_total
 
 
-def calculate_total_points(total: str) -> int:
+def calculate_total_price_points(total: str) -> int:
     t_points = 0
+    # Might be a more math-y way to do this, but checking the cents value seems fine
     if '.00' in total:
-        # Python's floating point math
         t_points += 50
 
+    # Check if the total is a multiple of 25 cents
     float_total = float(total)
     if float_total % 0.25 == 0.0:
-        # Check if the total is a multiple of 25 cents
         t_points += 25
 
     return t_points
@@ -70,12 +72,12 @@ def calculate_points(receipt: ReceiptsPayload) -> int:
     clean_retailer = re.sub(alpha_num_re, '', receipt.retailer)
 
     retailer_points = len(clean_retailer)
-    total_points = calculate_total_points(receipt.total)
-    item_count_points = 5 * math.floor(len(receipt.items) / 2)
+    total_price_points = calculate_total_price_points(receipt.total)
+    item_count_points = 5 * math.floor(len(receipt.items) / 2)  # round down to the nearest 2 multiple
     item_price_points = calculate_item_points(receipt.items)
     datetime_points = calculate_datetime_points(f'{receipt.purchaseDate} {receipt.purchaseTime}')
 
-    points_total = retailer_points + total_points + item_count_points + item_price_points + datetime_points
+    points_total = retailer_points + total_price_points + item_count_points + item_price_points + datetime_points
 
     return points_total
 
