@@ -102,14 +102,17 @@ def store_receipt(receipt: ReceiptsPayload) -> str:
         receipt_hash = md5(json.dumps(receipt, default=lambda o: o.__dict__).encode())
         receipt_key = receipt_hash.hexdigest()
 
-        if db.receipts.get(receipt_key, None):
-            return db.receipts.get(receipt_key).id
+        cached_receipt = db.receipts_cache.get(receipt_key, None)
+        if cached_receipt:
+            return cached_receipt
         else:
             db_receipt = DBObject()
             db_receipt.id = str(uuid4())
             db_receipt.points = calculate_points(receipt)
 
-            db.receipts[receipt_key] = db_receipt
+            db.receipts[db_receipt.id] = db_receipt
+
+            db.receipts_cache[receipt_key] = db_receipt.id
 
             return db_receipt.id
     except Exception as ex:
@@ -130,7 +133,7 @@ async def process_receipt(response: Response, payload: ReceiptsPayload):
 @api.get("/receipts/{id}/points")
 async def receipt_points(id: str):
     try:
-        receipt = [r for r in db.receipts.values() if r.id == id][0]
+        receipt = db.receipts[id]
 
         return {'points': receipt.points}
     except Exception:
